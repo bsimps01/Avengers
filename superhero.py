@@ -75,8 +75,10 @@ class Hero:
         while self.is_alive() and self.opponent.is_alive():
             if len(self.abilities) > 0 and len(self.opponent.abilities) == 0:
                 self.opponent.take_damage(self.attack())
+
             elif len(self.opponent.abilities) > 0 and len(self.abilities) == 0:
                 self.take_damage(self.opponent.attack())
+                
             else:
                 self.take_damage(self.opponent.attack())
                 self.opponent.take_damage(self.attack())
@@ -87,15 +89,44 @@ class Hero:
         else:
             print(f"{self.opponent.name} won!")
 
+    def add_weapon(self, weapon):
+        #Adds weapon to abilities list
+        self.weapon = weapon
+        self.abilities.append(weapon)
+
+class Weapon(Ability):
+    #This method returns a random value between one half to full attack power of the weapon.
+    def attack(self):
+        return random.randint(0, self.max_damage)
+
+class Team:
+    def __init__(self, name):
+        self.name = name
+        self.heroes = list()
+
+    def remove_hero(self, name):
+        #Removes hero from hero list
+        foundHero = False
+
+        for hero in self.heroes:
+            if hero.name == name:
+                self.heroes.remove(hero)
+                foundHero = True
+            if not foundHero:
+                return 0
+    
+    def view_all_heroes(self):
+        #Prints all the heroes to the list
+        for hero in self.heroes:
+            print(hero.name)
+
+    def add_hero(self, hero):
+        #Adds the hero object to the list
+        self.heroes.append(hero)
+
+
 if __name__ == "__main__":
-    hero1 = Hero("Wonder Woman")
-    hero2 = Hero("Dumbledore")
-    ability1 = Ability("Super Speed", 300)
-    ability2 = Ability("Super Eyes", 130)
-    ability3 = Ability("Wizard Wand", 80)
-    ability4 = Ability("Wizard Beard", 20)
-    hero1.add_ability(ability1)
-    hero1.add_ability(ability2)
-    hero2.add_ability(ability3)
-    hero2.add_ability(ability4)
-    hero1.fight(hero2)
+    hero = Hero("Wonder Woman")
+    weapon = Weapon("Lasso of Truth", 90)
+    hero.add_weapon(weapon)
+    print(hero.attack())
