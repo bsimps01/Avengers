@@ -8,7 +8,7 @@ class Ability:
         self.name = name
         self.max_damage = attack_strength
         attack_strength = 100
-
+        
     def attack(self):
         random_value = random.randint(0, self.max_damage)
         return random_value
@@ -32,6 +32,9 @@ class Hero:
         self.abilities = list()
         self.armors = list()
         self.current_health = starting_health
+        self.deaths = 0
+        self.kills = 0
+
 #Adds the ability to the list
     def add_ability(self, ability):
         self.ability = ability
@@ -78,21 +81,33 @@ class Hero:
 
             elif len(self.opponent.abilities) > 0 and len(self.abilities) == 0:
                 self.take_damage(self.opponent.attack())
-                
+
             else:
                 self.take_damage(self.opponent.attack())
                 self.opponent.take_damage(self.attack())
         #Checks to see who is the last person standing in the arguement
         if self.is_alive():
             print(f"{self.name} won!")
+            self.opponent.add_death(1)
+            self.add_kill(1)
             
         else:
             print(f"{self.opponent.name} won!")
+            self.add_death(1)
+            self.add_kill(1)
 
     def add_weapon(self, weapon):
         #Adds weapon to abilities list
         self.weapon = weapon
         self.abilities.append(weapon)
+
+    def add_kill(self, num_kills):
+        #Updates the number of kills
+        self.kills += num_kills
+
+    def add_death(self, num_deaths):
+        #Updates the number of deaths
+        self.deaths += num_deaths
 
 class Weapon(Ability):
     #This method returns a random value between one half to full attack power of the weapon.
@@ -124,6 +139,33 @@ class Team:
         #Adds the hero object to the list
         self.heroes.append(hero)
 
+    def stats(self):
+        #Prints team statistics
+        for hero in self.heroes:
+            kd = hero.kills / hero.deaths
+            print("{} Kill/Deaths:{}".format(hero.name, kd))
+
+    def revive_heroes(self):
+        #Resets all heroes health to starting_health
+        for hero in self.heroes:
+            hero.current_health = hero.starting_health
+
+    def attack(self, other_team):
+        self.other_team = other_team
+        living_heroes = list()
+        living_opponents = list()
+        random_hero = random.choice(self.heroes)
+        random_opponent = random.choice(self.other_team.heroes)
+
+        for hero in self.heroes:
+            living_heroes.append(hero)
+
+        for hero in other_team.heroes:
+            living_opponents.append(hero)
+
+        while len(living_heroes) > 0 and len(living_opponents) > 0:
+            random_hero.fight(random_opponent)
+            
 
 if __name__ == "__main__":
     hero = Hero("Wonder Woman")
