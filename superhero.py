@@ -43,6 +43,7 @@ class Hero:
         total_damage = 0
 
         for ability in self.abilities:
+            print(ability)
             total_damage += ability.attack()
             return total_damage
 
@@ -91,7 +92,7 @@ class Hero:
         else:
             print(f"{opponent.name} won!")
             self.add_death(1)
-            self.add_kill(1)
+            opponent.add_kill(1)
 
     def add_weapon(self, weapon):
         #Adds weapon to abilities list
@@ -152,8 +153,6 @@ class Team:
         self.other_team = other_team
         living_heroes = list()
         living_opponents = list()
-        random_hero = random.choice(self.heroes)
-        random_opponent = random.choice(self.other_team.heroes)
 
         for hero in self.heroes:
             living_heroes.append(hero)
@@ -162,8 +161,15 @@ class Team:
             living_opponents.append(hero)
 
         while len(living_heroes) > 0 and len(living_opponents) > 0:
+            random_hero = random.choice(living_heroes)
+            random_opponent = random.choice(living_opponents)
             random_hero.fight(random_opponent)
-        
+
+            if random_hero.is_alive():
+                living_opponents.remove(random_opponent)
+            else:
+                living_heroes.remove(random_hero)
+
     def currently_alive(self):
         #Checks if they are alive
         currently_alive = []
@@ -220,7 +226,7 @@ class Arena:
     def build_team_one(self):
         #BUilds the first team
         teamalpha = input("How many heroes are in the fight?...")
-        #team_one = Team(name)
+        
         if teamalpha != None:
             for _ in range(0, int(teamalpha)):
                 hero = self.create_hero()
@@ -232,7 +238,7 @@ class Arena:
     def build_team_two(self):
         #Builds the second team
         teambravo = input("How many heroes in the second squad?...")
-        # team_two = Team(name)
+    
         if teambravo != None:
             for _ in range(0, int(teambravo)):
                 hero = self.create_hero()
@@ -252,9 +258,9 @@ class Arena:
         self.team_two.stats()
 
         if len(self.team_one.currently_alive()) > 0:
-            print(self.team_one + "wins")
+            print(self.team_one.name + "wins")
         else:
-            print(self.team_two + "wins")
+            print(self.team_two.name + "wins")
 
 if __name__ == "__main__":
     game_is_running = True
